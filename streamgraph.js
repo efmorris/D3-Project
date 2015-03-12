@@ -2,6 +2,36 @@ chart("data.csv", "orange");
 
 var datearray = [];
 var colorrange = [];
+/*
+function updateData() {
+
+    // Get the data again
+    d3.csv("data.csv", function(error, data) {
+        data.forEach(function(d) {
+            d.date = parseDate(d.date);
+            d.value = +d.value;
+        });
+
+        // Scale the range of the data again 
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
+
+    // Select the section we want to apply our changes to
+    var svg = d3.select("body").transition();
+
+    // Make the changes
+        svg.select(".line")   // change the line
+            .duration(750)
+            .attr("d", valueline(data));
+        svg.select(".x.axis") // change the x axis
+            .duration(750)
+            .call(xAxis);
+        svg.select(".y.axis") // change the y axis
+            .duration(750)
+            .call(yAxis);
+
+    });
+}*/
 
 
 function chart(csvpath, color) {
@@ -28,8 +58,8 @@ var tooltip = d3.select("body")
     .attr("class", "remove")
     .style("position", "absolute")
     .style("z-index", "20") // z-index or "bring-to-top"
-    .style("visibility", "visible") //"visible" was originally "hidden"
-    .style("top", "75px") //height of tooltip
+    .style("visibility", "hidden")
+    .style("top", "100px") //height of tooltip
     .style("left", "100px");
 
 var x = d3.time.scale()
@@ -77,6 +107,10 @@ var graph = d3.csv(csvpath, function(data) {
   data.forEach(function(d) {
     d.date = format.parse(d.date);
     d.value = +d.value;
+    d.genre = d. genre;
+    d.total = d.total;
+    d.company = d. company;
+    d.console = d. console;
   });
 
   var layers = stack(nest.entries(data));
@@ -96,13 +130,7 @@ var graph = d3.csv(csvpath, function(data) {
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
-      .append("text")
-      .attr("class", "label")
-      .attr("y", 40)
-      .attr("x", width/2)
-      .style("text-anchor", "end")
-      .attr("font-size", "16px")
-      .text("Years");
+
     
   svg.append("g")
       .attr("class", "y axis")
@@ -112,15 +140,6 @@ var graph = d3.csv(csvpath, function(data) {
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis.orient("left"))
-      .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", -40)
-      .attr("x", -130)
-      .style("text-anchor", "end")
-      .attr("font-size", "16px")
-      .text("Revenue in Millions of USD");
-
 
   svg.selectAll(".layer")
     .attr("opacity", 1)
@@ -130,7 +149,7 @@ var graph = d3.csv(csvpath, function(data) {
       .attr("opacity", function(d, j) {
         return j != i ? 0.6 : 1;
     })})
-
+  
     .on("mousemove", function(d, i) {
       mousex = d3.mouse(this);
       mousex = mousex[0];
@@ -144,11 +163,12 @@ var graph = d3.csv(csvpath, function(data) {
 
       mousedate = datearray.indexOf(invertedx);
       pro = d.values[mousedate].value;
+      
       d3.select(this)
       .classed("hover", true)
       .attr("stroke", strokecolor)
       .attr("stroke-width", "0.5px"), 
-      tooltip.html( "<p>" + d.key + "<br>" + pro + " million USD" + "</p>" ).style("visibility", "visible");
+      tooltip.html( "<p>" + d.key + "<br>" + "Genre: " + d.values[mousedate].genre + "<br>" + "Company: " + d.values[mousedate].company + "<br>" + "Console: " + d.values[mousedate].console + "<br>" + "Annual Revenue: " + pro + " million USD" + "<br>" + "Total Revenue: " + d.values[mousedate].total + " million USD" + "<br>" + "</p>" ).style("visibility", "visible");
       
     })
     .on("mouseout", function(d, i) {
@@ -158,7 +178,7 @@ var graph = d3.csv(csvpath, function(data) {
       .attr("opacity", "1");
       d3.select(this)
       .classed("hover", false)
-      .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.key + "<br>" + pro + " million USD" + "</p>" ).style("visibility", "visible"); //"visible" was originally "hidden"
+      .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.key + "<br>" + "Genre: " + d.values[mousedate].genre + "<br>" + "Company: " + d.values[mousedate].company + "<br>" + "Console: " + d.values[mousedate].console + "<br>" + "Annual Revenue: " + pro + " million USD" + "<br>" + "Total Revenue: " + d.values[mousedate].total + " million USD" + "<br>" + "</p>" ).style("visibility", "hidden");
   })
     
   var vertical = d3.select(".chart")
@@ -167,7 +187,7 @@ var graph = d3.csv(csvpath, function(data) {
         .style("position", "absolute")
         .style("z-index", "19")
         .style("width", "1px")
-        .style("height", "405px")
+        .style("height", "440px")
   //Change this variable to adjust the height of the dynamic white line.
         .style("top", "75px")
         .style("bottom", "30px")
