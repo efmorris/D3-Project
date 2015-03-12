@@ -2,37 +2,6 @@ chart("data.csv", "orange");
 
 var datearray = [];
 var colorrange = [];
-/*
-function updateData() {
-
-    // Get the data again
-    d3.csv("data.csv", function(error, data) {
-        data.forEach(function(d) {
-            d.date = parseDate(d.date);
-            d.value = +d.value;
-        });
-
-        // Scale the range of the data again 
-      x.domain(d3.extent(data, function(d) { return d.date; }));
-      y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
-
-    // Select the section we want to apply our changes to
-    var svg = d3.select("body").transition();
-
-    // Make the changes
-        svg.select(".line")   // change the line
-            .duration(750)
-            .attr("d", valueline(data));
-        svg.select(".x.axis") // change the x axis
-            .duration(750)
-            .call(xAxis);
-        svg.select(".y.axis") // change the y axis
-            .duration(750)
-            .call(yAxis);
-
-    });
-}*/
-
 
 function chart(csvpath, color) {
 
@@ -59,7 +28,7 @@ var tooltip = d3.select("body")
     .style("position", "absolute")
     .style("z-index", "20") // z-index or "bring-to-top"
     .style("visibility", "hidden")
-    .style("top", "100px") //height of tooltip
+    .style("top", "70px") //height of tooltip
     .style("left", "100px");
 
 var x = d3.time.scale()
@@ -71,10 +40,15 @@ var y = d3.scale.linear()
 var z = d3.scale.ordinal()
     .range(colorrange);
 
+//Custom axis scale
+var axisScale = d3.scale.linear()
+                        .domain([2005,2015])
+                        .range([0,width]);
+    
 var xAxis = d3.svg.axis()
-    .scale(x)
+    .scale(axisScale)
     .orient("bottom")
-    .ticks(d3.time.years);
+    .tickFormat(d3.format("d"));
 
 var yAxis = d3.svg.axis()
     .scale(y);
@@ -189,7 +163,7 @@ var graph = d3.csv(csvpath, function(data) {
         .style("width", "1px")
         .style("height", "440px")
   //Change this variable to adjust the height of the dynamic white line.
-        .style("top", "75px")
+        .style("top", "40px")
         .style("bottom", "30px")
         .style("left", "0px")
         .style("background", "#fff");
